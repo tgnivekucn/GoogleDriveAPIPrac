@@ -13,7 +13,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         if let data = UIImage(named: "testImage2")?.jpegData(compressionQuality: 1) {
-            GoogleDriveAPIManager.shared.testUploadFile(imageData: data)
+            GoogleDriveAPIManager.shared.testUploadFile(imageData: data) { result in
+                print("result is: \(result)")
+            }
         }
     }
 

@@ -13,7 +13,7 @@ class GoogleDriveAPIManager {
     // URL for the Google Drive API
     private let url = URL(string: "https://www.googleapis.com/upload/drive/v3/files")!
     
-    func testUploadFile(imageData: Data) {
+    func testUploadFile(imageData: Data, callback: ((UploadFileResponse) -> Void)? = nil) {
         guard let accessToken = getCloudToken() else {
             return
         }
@@ -57,9 +57,19 @@ class GoogleDriveAPIManager {
                 print("No data received")
                 return
             }
-            if let responseString = String(data: data, encoding: .utf8) {
-                print(responseString)
+            
+            do {
+                let responseData = try JSONDecoder().decode(UploadFileResponse.self, from: data)
+                // Use the parsed data
+//                print("Response result: \(responseData)")
+                callback?(responseData)
+            } catch {
+                print("Error decoding JSON response: \(error)")
             }
+            
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print(responseString)
+//            }
         }
         
         task.resume()
@@ -77,7 +87,6 @@ class GoogleDriveAPIManager {
             // Now you can access values from the dictionary
             // Replace "YourKey" with the actual key you're interested in
             if let value = dict["googleCloudToken"] as? String {
-                print(value)
                 return value
             } else {
                 print("Key not found.")
@@ -99,7 +108,6 @@ class GoogleDriveAPIManager {
             // Now you can access values from the dictionary
             // Replace "YourKey" with the actual key you're interested in
             if let value = dict["testUploadFolderID"] as? String {
-                print(value)
                 return value
             } else {
                 print("Key not found.")
